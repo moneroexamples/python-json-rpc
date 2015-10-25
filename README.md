@@ -1,4 +1,4 @@
-# Examples of using json-rpc in Python for Monero.
+# Example usage of json-rpc in Python for Monero
 
 Monero is a secure, private, untraceable cryptocurrency. For more information or questions,
 please go to [getmonero.org](https://getmonero.org) and
@@ -23,7 +23,7 @@ programs on top of Monero.
 
 ## simplewallet
 The examples demonstrate how to call the most popular procedures
-that simplewallet exposes for other applications to use, such as:
+that `simplewallet` exposes for other applications to use, such as:
 
  - getbalance
  - query_key
@@ -37,8 +37,8 @@ The basic documentaion of the procedures can be found
 
 **Prerequsits**
 
-Before executing this code make sure that simplewallet is
-running and listening for the incoming rpc calls. For example, you can run the simplewallet in rpc mode as follows:
+Before executing this code make sure that `simplewallet` is
+running and listening for the incoming rpc calls. For example, you can run the `simplewallet `in rpc mode as follows:
 ```
 /opt/bitmonero/simplewallet --wallet-file ~/wallet.bin --password <wallet_password> --rpc-bind-port 18082
 ```
@@ -288,7 +288,7 @@ More examples are [here](https://github.com/moneroexamples/python-json-rpc/blob/
 
 ## bitmonreod
 
-The baisc bitmonerod rpc calls are as follows:
+The baisc `bitmonerod` rpc calls are as follows:
 
  - getheight
  - query_key
@@ -303,7 +303,7 @@ The baisc bitmonerod rpc calls are as follows:
 
  **Prerequsits**
 
- Before executing this code make sure that bitmonerod is running.
+ Before executing this code make sure that `bitmonerod` is running.
  Just like before, the code was written, tested and executed on Ubuntu 15.10 with
  Python 3.4.3 and it requires the [Requests package](https://pypi.python.org/pypi/requests).
 
@@ -485,4 +485,4 @@ Generated output:
 
 ```
 
-More examples hopefully soon soon.
+More examples hopefully coming soon.

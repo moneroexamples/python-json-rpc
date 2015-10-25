@@ -74,7 +74,7 @@ Python 3.4.3 and requires the <a href="https://pypi.python.org/pypi/requests">Re
 
 <p><strong>Basic example 1: get wallet balance</strong></p>
 
-<div class="highlight highlight-source-python"><pre><span class="pl-k">import</span> requestss
+<div class="highlight highlight-source-python"><pre><span class="pl-k">import</span> requests
 <span class="pl-k">import</span> json
 
 <span class="pl-k">def</span> <span class="pl-en">main</span>():
@@ -98,6 +98,17 @@ Python 3.4.3 and requires the <a href="https://pypi.python.org/pypi/requests">Re
         url,
         <span class="pl-smi">data</span><span class="pl-k">=</span>json.dumps(rpc_input),
         <span class="pl-smi">headers</span><span class="pl-k">=</span>headers)
+
+    <span class="pl-c"># amounts in cryptonote are encoded in a way which is convenient</span>
+    <span class="pl-c"># for a computer, not a user. Thus, its better need to recode them</span>
+    <span class="pl-c"># to something user friendly, before displaying them.</span>
+    <span class="pl-c">#</span>
+    <span class="pl-c"># For examples:</span>
+    <span class="pl-c"># 4760000000000 is 4.76</span>
+    <span class="pl-c"># 80000000000   is 0.08</span>
+    <span class="pl-c">#</span>
+    <span class="pl-c"># In example 3 "Basic example 3: get incoming transfers" it is</span>
+    <span class="pl-c"># shown how to convert cryptonote values to user friendly format.</span>
 
     <span class="pl-c"># pretty print json output</span>
     <span class="pl-k">print</span>(json.dumps(response.json(), <span class="pl-smi">indent</span><span class="pl-k">=</span><span class="pl-c1">4</span>))

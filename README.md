@@ -4,13 +4,16 @@ Most important functions of Monero's simplewallet and
 bitmonreod can be executed by means of JavaScript Object Notation Remote Procedure Calls ([json-rpc](https://en.wikipedia.org/wiki/JSON-RPC)).
 
 Using these procedures, other applications can be developed
-on top of the simplewallet. For example, a GUI,
-or an web applications allowing for accessing wallet balance
-online.
+on top of the simplewallet and bitmonerod. For examples, a GUI wallet,
+an web applications allowing for accessing wallet balance
+online, block explorer, etc.
 
 Despite this, there seem to be no tutorials and/or examples of how
 to use json-rpc to interface both bitmonerod and simplewallet. For this
 reason, the following examples in Python were created.
+
+Hopefully, they will allow others to start developing some python
+programs on top of Monero.
 
 ## simplewallet
 The examples demonstrate how to call the most popular procedures

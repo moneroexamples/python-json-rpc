@@ -64,7 +64,7 @@ def main():
         data=json.dumps(rpc_input),
         headers=headers)
 
-    # preaty print json outout
+    # pretty print json output
     print(json.dumps(response.json(), indent=4))
 
 if __name__ == "__main__":
@@ -99,18 +99,19 @@ The baisc bitmonerod rpc calls are as follows:
  - get_info
  - get_connections
 
+
+ **Prerequsits**
+
+ Before executing this code make sure that bitmonerod is running.
+
 **Basic example showing how to get a block header**
 ```python
 import requests
 import json
 
-**Prerequsits**
-
-Before executing this code make sure that bitmonerod is running.
-
 def main():
 
-    # simple wallet is running on the localhost and port of 18082
+    # bitmonerod is running on the localhost and port of 18081
     url = "http://localhost:18081/json_rpc"
 
     # standard json header
@@ -134,11 +135,71 @@ def main():
         data=json.dumps(rpc_input),
         headers=headers)
 
-    # preaty print json outout
+    # pretty print json output
     print(json.dumps(response.json(), indent=4))
 
 if __name__ == "__main__":
     main()
+```
+
+Generated output:
+```python
+{
+    "result": {
+        "status": "OK",
+        "block_header": {
+            "difficulty": 756932534,
+            "height": 796743,
+            "nonce": 8389,
+            "depth": 46,
+            "orphan_status": false,
+            "hash": "d78e2d024532d8d8f9c777e2572623fd0f229d72d9c9c9da3e7cb841a3cb73c6",
+            "timestamp": 1445741816,
+            "major_version": 1,
+            "minor_version": 0,
+            "prev_hash": "dff9c6299c84f945fabde9e96afa5d44f3c8fa88835fb87a965259c46694a2cd",
+            "reward": 8349972377827
+        }
+    },
+    "jsonrpc": "2.0",
+    "id": "0"
+}
+```
+
+**Basic example showing how to get a mining status**
+```python
+import requests
+import json
+
+def main():
+
+    # bitmonerod' is running on the localhost and port of 18081
+    url = "http://localhost:18081/mining_status"
+
+    # standard json header
+    headers = {'content-type': 'application/json'}
+
+    # execute the rpc request
+    response = requests.post(
+        url,
+        headers=headers)
+
+    # pretty print json output
+    print(json.dumps(response.json(), indent=4))
+
+if __name__ == "__main__":
+    main()
+```
+Generated output:
+
+```python
+{
+    "status": "OK",
+    "threads_count": 2,
+    "speed": 117,
+    "active": true,
+    "address": "48daf1rG3hE1Txapcsxh6WXNe9MLNKtu7W7tKTivtSoVLHErYzvdcpea2nSTgGkz66RFP4GKVAsTV14v6G3oddBTHfxP6tU"
+}
 ```
 
 More examples are comming soon.

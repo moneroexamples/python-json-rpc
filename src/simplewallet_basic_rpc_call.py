@@ -31,7 +31,7 @@ def main():
         data=json.dumps(rpc_input),
         headers=headers)
 
-    # preaty print json outout
+    # pretty print json output
     print(json.dumps(response.json(), indent=4))
 
 if __name__ == "__main__":

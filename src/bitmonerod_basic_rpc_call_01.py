@@ -1,10 +1,11 @@
-# Basic example of json-rpc calls to Monero's simplewallet.
+# Basic example of json-rpc calls to Monero's bitmonerod.
 #
-# The example gets the wallet's balance
+# The example gets a header of a block with
+# the following hash:
+# d78e2d024532d8d8f9c777e2572623fd0f229d72d9c9c9da3e7cb841a3cb73c6
 #
-# The simplewallet RPC docs are here:
-# https://getmonero.org/knowledge-base/developer-guides/wallet-rpc
-#
+# The bitmonerod RPC docs are here: not avaliable
+
 
 import requests
 import json
@@ -12,14 +13,18 @@ import json
 def main():
 
     # simple wallet is running on the localhost and port of 18082
-    url = "http://localhost:18082/json_rpc"
+    url = "http://localhost:18081/json_rpc"
 
     # standard json header
     headers = {'content-type': 'application/json'}
 
-    # simplewallet' procedure/method to call
+    # the block to get
+    block_hash = 'd78e2d024532d8d8f9c777e2572623fd0f229d72d9c9c9da3e7cb841a3cb73c6'
+
+    # bitmonerod' procedure/method to call
     rpc_input = {
-           "method": "getbalance"
+           "method": "getblockheaderbyhash",
+           "params": {"hash": block_hash}
     }
 
     # add standard rpc values

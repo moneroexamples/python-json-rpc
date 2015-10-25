@@ -12,7 +12,7 @@ import json
 
 def main():
 
-    # bitmonerod is running on the localhost and port of 18081
+    # bitmonerod is running on the localhost and port of 18082
     url = "http://localhost:18081/json_rpc"
 
     # standard json header
@@ -36,7 +36,7 @@ def main():
         data=json.dumps(rpc_input),
         headers=headers)
 
-    # pretty print json output
+    # pretty print json outout
     print(json.dumps(response.json(), indent=4))
 
 if __name__ == "__main__":

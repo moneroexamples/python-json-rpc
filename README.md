@@ -1,23 +1,29 @@
 # Examples of using json-rpc in Python for Monero.
 
-Most important functions of Monero's simplewallet and
-bitmonreod can be executed by means of JavaScript Object Notation Remote Procedure Calls ([json-rpc](https://en.wikipedia.org/wiki/JSON-RPC)).
+Monero is a secure, private, untraceable cryptocurrency. For more information or questions,
+please go to [getmonero.org](https://getmonero.org) and
+[r/Monero](https://www.reddit.com/r/Monero), respectively.
+
+The two main components of monero are `simplewallet` and `bitmonerod`. The first one
+is the wallet, as the name suggest. The second one is monero deamon, which is responsbile
+for interacting with monero blockchain.
+
+Most important functions of Monero's `simplewallet` and
+`bitmonreod` can be executed by means of JavaScript Object Notation Remote Procedure Calls ([json-rpc](https://en.wikipedia.org/wiki/JSON-RPC)).
 
 Using these procedures, other applications can be developed
-on top of the simplewallet and bitmonerod. For examples, a GUI wallet,
+on top of the `simplewallet` and `bitmonerod`. For examples, a GUI wallet,
 an web applications allowing for accessing wallet balance
-online, block explorer, etc.
+online, and block explorer.
 
-Despite this, there seem to be no tutorials and/or examples of how
-to use json-rpc to interface both bitmonerod and simplewallet. For this
-reason, the following examples in Python were created.
-
-Hopefully, they will allow others to start developing some python
+Since there seem to be no tutorials and/or examples of how
+to use json-rpc to interact with both `bitmonerod` and `simplewallet`,
+ the following examples in Python were created. Hopefully, they will allow others to start developing some python
 programs on top of Monero.
 
 ## simplewallet
 The examples demonstrate how to call the most popular procedures
-that simplewallet which are exposed for other applications to use such as:
+that simplewallet exposes for other applications to use, such as:
 
  - getbalance
  - query_key
@@ -298,6 +304,8 @@ The baisc bitmonerod rpc calls are as follows:
  **Prerequsits**
 
  Before executing this code make sure that bitmonerod is running.
+ Just like before, the code was written, tested and executed on Ubuntu 15.10 with
+ Python 3.4.3 and it requires the [Requests package](https://pypi.python.org/pypi/requests).
 
 
 **Basic example 1: get a mining status**
@@ -477,12 +485,4 @@ Generated output:
 
 ```
 
-More examples are coming soon.
-
-# What is Monero
-
-> Monero is a secure, private, untraceable currency. It is open-source and freely available to all.
-
-For more information and questions about Monero,
-one can go to [getmonero.org](https://getmonero.org) and
-[r/Monero](https://www.reddit.com/r/Monero), respectively.
+More examples hopefully soon soon.

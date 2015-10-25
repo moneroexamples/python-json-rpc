@@ -352,9 +352,7 @@ def main():
 
     # add standard rpc values
     rpc_input.update({"jsonrpc": "2.0", "id": "0"})
-
-    print(json.dumps(rpc_input))
-
+    
     # execute the rpc request
     response = requests.post(
          url,

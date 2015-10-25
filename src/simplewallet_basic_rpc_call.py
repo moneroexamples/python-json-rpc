@@ -5,7 +5,6 @@
 # The simplewallet RPC docs are here:
 # https://getmonero.org/knowledge-base/developer-guides/wallet-rpc
 #
-#
 
 import requests
 import json
@@ -33,9 +32,6 @@ def main():
         headers=headers)
 
     print(response.json())
-
-
-
 
 if __name__ == "__main__":
     main()

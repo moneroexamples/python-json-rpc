@@ -311,12 +311,10 @@ The baisc `bitmonerod` rpc calls are as follows:
  - get_info
  - get_connections
 
-
- **Prerequsits**
-
- Before executing this code make sure that `bitmonerod` is running.
- Just like before, the code was written, tested and executed on Ubuntu 15.10 with
- Python 3.4.3 and it requires the [Requests package](https://pypi.python.org/pypi/requests).
+**Prerequsits**
+Before executing this code make sure that `bitmonerod` is running.
+Just like before, the code was written, tested and executed on Ubuntu 15.10 with
+Python 3.4.3 and it requires the [Requests package](https://pypi.python.org/pypi/requests).
 
 
 **Basic example 1: get a mining status**
@@ -493,7 +491,62 @@ Generated output:
     },
     "id": "0"
 }
+```
 
+**Basic example 4: get blockchain information**
+```python
+import requests
+import json
+
+def main():
+
+    # bitmonerod is running on the localhost and port of 18082
+    url = "http://localhost:18081/json_rpc"
+
+    # standard json header
+    headers = {'content-type': 'application/json'}
+
+    # bitmonerod' procedure/method to call
+    rpc_input = {
+           "method": "get_info"
+    }
+
+    # add standard rpc values
+    rpc_input.update({"jsonrpc": "2.0", "id": "0"})
+
+    # execute the rpc request
+    response = requests.post(
+        url,
+        data=json.dumps(rpc_input),
+        headers=headers)
+
+    # pretty print json output
+    print(json.dumps(response.json(), indent=4))
+
+if __name__ == "__main__":
+    main()
+```
+
+
+Generated output:
+```python
+{
+    "jsonrpc": "2.0",
+    "result": {
+        "status": "OK",
+        "alt_blocks_count": 0,
+        "difficulty": 692400878,
+        "height": 797031,
+        "tx_pool_size": 1,
+        "grey_peerlist_size": 3447,
+        "outgoing_connections_count": 12,
+        "tx_count": 492488,
+        "white_peerlist_size": 253,
+        "target_height": 796995,
+        "incoming_connections_count": 0
+    },
+    "id": "0"
+}
 ```
 
 More examples hopefully coming soon.

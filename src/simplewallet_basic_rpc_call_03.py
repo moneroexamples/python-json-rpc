@@ -19,7 +19,7 @@ def main():
     # standard json header
     headers = {'content-type': 'application/json'}
 
-    # bitmonerod' procedure/method to call
+    # simplewallet' procedure/method to call
     rpc_input = {
             "method": "incoming_transfers",
             "params": {"transfer_type": "all"}

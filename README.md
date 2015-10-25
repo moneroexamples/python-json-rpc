@@ -1,4 +1,4 @@
-# Examples of json-rpc calls for Monero's simplewallet.
+## Examples of json-rpc calls for Monero's simplewallet.
 
 The simplewallet RPC docs are here:
 https://getmonero.org/knowledge-base/developer-guides/wallet-rpc
@@ -19,7 +19,7 @@ on top of the simplewallet. For example, a GUI,
 or an web applications allowing for accessing wallet balance
  online.
 
-# Prerequisites
+## Prerequisites
 
 Before executing this code make sure that simplewallet is
 running and listening for the incoming rpc calls.
@@ -32,7 +32,7 @@ For example, you can run the simplewallet in rpc mode as follows:
 The code was written, tested and executed on Ubuntu 15.10 with
 Python 3.4.3 and requires the [Requests package](https://pypi.python.org/pypi/requests).
 
-# What is Monero
+## What is Monero
 
 > Monero is a secure, private, untraceable currency. It is open-source and freely available to all.
 

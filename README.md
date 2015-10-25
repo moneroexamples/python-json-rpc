@@ -3,14 +3,14 @@
 Most important functions of Monero's simplewallet and
 bitmonreod can be executed by means of JavaScript Object Notation Remote Procedure Calls ([json-rpc](https://en.wikipedia.org/wiki/JSON-RPC)).
 
-Despite this, there seem to be no tutorials and/or examples of how to use json-rpc to interface both bitmonerod and simplewallet.
-
-
 Using these procedures, other applications can be developed
 on top of the simplewallet. For example, a GUI,
 or an web applications allowing for accessing wallet balance
 online.
 
+Despite this, there seem to be no tutorials and/or examples of how 
+to use json-rpc to interface both bitmonerod and simplewallet. For this
+reason, the following examples in Python were created.
 
 ## simplewallet
 The examples demonstrate how to call the most popular procedures
@@ -86,4 +86,6 @@ Coming as soon...
 
 > Monero is a secure, private, untraceable currency. It is open-source and freely available to all.
 
-More can be found at [getmonero.org](https://getmonero.org)
+For more information and questions about Monero, 
+one can go to [getmonero.org](https://getmonero.org) and 
+[r/Monero](https://www.reddit.com/r/Monero), respectively. 

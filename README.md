@@ -26,6 +26,7 @@ that simplewallet which are exposed for other applications to use such as:
 The basic documentaion of the procedures can be found
 [here](https://getmonero.org/knowledge-base/developer-guides/wallet-rpc).
 
+**Prerequsits**
 
 Before executing this code make sure that simplewallet is
 running and listening for the incoming rpc calls. For example, you can run the simplewallet in rpc mode as follows:
@@ -36,7 +37,7 @@ running and listening for the incoming rpc calls. For example, you can run the s
 The code was written, tested and executed on Ubuntu 15.10 with
 Python 3.4.3 and requires the [Requests package](https://pypi.python.org/pypi/requests).
 
-**Basic example showing how to get current balance:**
+**Basic example showing how to get current balance**
 ```python
 import requests
 import json
@@ -70,7 +71,7 @@ if __name__ == "__main__":
 ```
 
 Generated output:
-```json
+```python
 {'result': {'balance': 4760000000000, 'unlocked_balance': 4760000000000}, 'id': '0', 'jsonrpc': '2.0'}
 ```
 

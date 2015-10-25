@@ -20,25 +20,34 @@
 
     <section class="main-content">
       <h1>
-<a id="examples-of-using-json-rpc-in-python-for-monero" class="anchor" href="#examples-of-using-json-rpc-in-python-for-monero" aria-hidden="true"><span class="octicon octicon-link"></span></a>Examples of using json-rpc in Python for Monero.</h1>
+<a id="example-usage-of-json-rpc-in-python-for-monero" class="anchor" href="#example-usage-of-json-rpc-in-python-for-monero" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example usage of json-rpc in Python for Monero</h1>
 
-<p>Most important functions of Monero's simplewallet and
-bitmonreod can be executed by means of JavaScript Object Notation Remote Procedure Calls (<a href="https://en.wikipedia.org/wiki/JSON-RPC">json-rpc</a>).</p>
+<p>Monero is a secure, private, untraceable cryptocurrency. For more information or questions,
+please go to <a href="https://getmonero.org">getmonero.org</a> and
+<a href="https://www.reddit.com/r/Monero">r/Monero</a>, respectively.</p>
+
+<p>The two main components of monero are <code>simplewallet</code> and <code>bitmonerod</code>. The first one
+is the wallet, as the name suggest. The second one is monero deamon, which is responsbile
+for interacting with monero blockchain.</p>
+
+<p>Most important functions of Monero's <code>simplewallet</code> and
+<code>bitmonreod</code> can be executed by means of JavaScript Object Notation Remote Procedure Calls (<a href="https://en.wikipedia.org/wiki/JSON-RPC">json-rpc</a>).</p>
 
 <p>Using these procedures, other applications can be developed
-on top of the simplewallet. For example, a GUI,
-or an web applications allowing for accessing wallet balance
-online.</p>
+on top of the <code>simplewallet</code> and <code>bitmonerod</code>. For examples, a GUI wallet,
+an web applications allowing for accessing wallet balance
+online, and block explorer.</p>
 
-<p>Despite this, there seem to be no tutorials and/or examples of how
-to use json-rpc to interface both bitmonerod and simplewallet. For this
-reason, the following examples in Python were created.</p>
+<p>Since there seem to be no tutorials and/or examples of how
+to use json-rpc to interact with both <code>bitmonerod</code> and <code>simplewallet</code>,
+ the following examples in Python were created. Hopefully, they will allow others to start developing some python
+programs on top of Monero.</p>
 
 <h2>
 <a id="simplewallet" class="anchor" href="#simplewallet" aria-hidden="true"><span class="octicon octicon-link"></span></a>simplewallet</h2>
 
 <p>The examples demonstrate how to call the most popular procedures
-that simplewallet which are exposed for other applications to use such as:</p>
+that <code>simplewallet</code> exposes for other applications to use, such as:</p>
 
 <ul>
 <li>getbalance</li>
@@ -54,8 +63,8 @@ that simplewallet which are exposed for other applications to use such as:</p>
 
 <p><strong>Prerequsits</strong></p>
 
-<p>Before executing this code make sure that simplewallet is
-running and listening for the incoming rpc calls. For example, you can run the simplewallet in rpc mode as follows:</p>
+<p>Before executing this code make sure that <code>simplewallet</code> is
+running and listening for the incoming rpc calls. For example, you can run the <code>simplewallet</code>in rpc mode as follows:</p>
 
 <pre><code>/opt/bitmonero/simplewallet --wallet-file ~/wallet.bin --password &lt;wallet_password&gt; --rpc-bind-port 18082
 </code></pre>
@@ -295,7 +304,7 @@ Python 3.4.3 and requires the <a href="https://pypi.python.org/pypi/requests">Re
 <h2>
 <a id="bitmonreod" class="anchor" href="#bitmonreod" aria-hidden="true"><span class="octicon octicon-link"></span></a>bitmonreod</h2>
 
-<p>The baisc bitmonerod rpc calls are as follows:</p>
+<p>The baisc <code>bitmonerod</code> rpc calls are as follows:</p>
 
 <ul>
 <li>getheight</li>
@@ -311,7 +320,9 @@ Python 3.4.3 and requires the <a href="https://pypi.python.org/pypi/requests">Re
 
 <p><strong>Prerequsits</strong></p>
 
-<p>Before executing this code make sure that bitmonerod is running.</p>
+<p>Before executing this code make sure that <code>bitmonerod</code> is running.
+Just like before, the code was written, tested and executed on Ubuntu 15.10 with
+Python 3.4.3 and it requires the <a href="https://pypi.python.org/pypi/requests">Requests package</a>.</p>
 </li>
 </ul>
 
@@ -483,18 +494,7 @@ Python 3.4.3 and requires the <a href="https://pypi.python.org/pypi/requests">Re
 }
 </pre></div>
 
-<p>More examples are coming soon.</p>
-
-<h1>
-<a id="what-is-monero" class="anchor" href="#what-is-monero" aria-hidden="true"><span class="octicon octicon-link"></span></a>What is Monero</h1>
-
-<blockquote>
-<p>Monero is a secure, private, untraceable currency. It is open-source and freely available to all.</p>
-</blockquote>
-
-<p>For more information and questions about Monero,
-one can go to <a href="https://getmonero.org">getmonero.org</a> and
-<a href="https://www.reddit.com/r/Monero">r/Monero</a>, respectively.</p>
+<p>More examples hopefully coming soon.</p>
 
       <footer class="site-footer">
         <span class="site-footer-owner"><a href="https://github.com/moneroexamples/python-json-rpc">Monero Examples</a> is maintained by <a href="https://github.com/moneroexamples">moneroexamples</a>.</span>

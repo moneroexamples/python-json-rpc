@@ -720,7 +720,9 @@ More examples hopefully coming soon.
 ## How can you help?
 
 Constructive criticism, code and website edits, and new examples are always welcome.  
-They can be made through gihub. 
+They can be made through gihub.
 
 Obviously, some Monero are also welcome:
+```
 489MAxaT7xXP3Etjk2suJT1uDYZU6cqFycsau2ynCTBacncWVEwe9eYFrAD6BqTn4Y2KMs7maX75iX1UFwnJNG5G88wxKoj
+```

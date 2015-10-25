@@ -55,7 +55,11 @@ def main():
     print(json.dumps(response_json, indent=4))
 
 def get_money(amount):
-    """decode cryptonote amount format to user friendly format. Hope its correct."""
+    """decode cryptonote amount format to user friendly format. Hope its correct.
+
+    Based on C++ code:
+    https://github.com/monero-project/bitmonero/blob/master/src/cryptonote_core/cryptonote_format_utils.cpp#L751
+    """
 
     CRYPTONOTE_DISPLAY_DECIMAL_POINT = 12
 

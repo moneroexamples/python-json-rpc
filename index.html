@@ -195,7 +195,7 @@ Python 3.4.3 and requires the <a href="https://pypi.python.org/pypi/requests">Re
     <span class="pl-c"># standard json header</span>
     headers <span class="pl-k">=</span> {<span class="pl-s"><span class="pl-pds">'</span>content-type<span class="pl-pds">'</span></span>: <span class="pl-s"><span class="pl-pds">'</span>application/json<span class="pl-pds">'</span></span>}
 
-    <span class="pl-c"># bitmonerod' procedure/method to call</span>
+    <span class="pl-c"># simplewallet' procedure/method to call</span>
     rpc_input <span class="pl-k">=</span> {
             <span class="pl-s"><span class="pl-pds">"</span>method<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>incoming_transfers<span class="pl-pds">"</span></span>,
             <span class="pl-s"><span class="pl-pds">"</span>params<span class="pl-pds">"</span></span>: {<span class="pl-s"><span class="pl-pds">"</span>transfer_type<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>all<span class="pl-pds">"</span></span>}
@@ -231,7 +231,11 @@ Python 3.4.3 and requires the <a href="https://pypi.python.org/pypi/requests">Re
     <span class="pl-k">print</span>(json.dumps(response_json, <span class="pl-smi">indent</span><span class="pl-k">=</span><span class="pl-c1">4</span>))
 
 <span class="pl-k">def</span> <span class="pl-en">get_money</span>(<span class="pl-smi">amount</span>):
-    <span class="pl-s"><span class="pl-pds">"""</span>decode cryptonote amount format to user friendly format. Hope its correct.<span class="pl-pds">"""</span></span>
+    <span class="pl-s"><span class="pl-pds">"""</span>decode cryptonote amount format to user friendly format. Hope its correct.</span>
+<span class="pl-s"></span>
+<span class="pl-s">    Based on C++ code:</span>
+<span class="pl-s">    https://github.com/monero-project/bitmonero/blob/master/src/cryptonote_core/cryptonote_format_utils.cpp#L751</span>
+<span class="pl-s">    <span class="pl-pds">"""</span></span>
 
     CRYPTONOTE_DISPLAY_DECIMAL_POINT <span class="pl-k">=</span> <span class="pl-c1">12</span>
 
@@ -310,7 +314,168 @@ Python 3.4.3 and requires the <a href="https://pypi.python.org/pypi/requests">Re
     <span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>0<span class="pl-pds">"</span></span>
 }</pre></div>
 
-<p>More examples are <a href="https://github.com/moneroexamples/python-json-rpc/blob/master/src/simplewallet_rpc_examples.py">here</a></p>
+<p><strong>Basic example 4: make a transaction</strong></p>
+
+<div class="highlight highlight-source-python"><pre><span class="pl-k">import</span> requests
+<span class="pl-k">import</span> json
+<span class="pl-k">import</span> os
+<span class="pl-k">import</span> binascii
+
+
+<span class="pl-k">def</span> <span class="pl-en">main</span>():
+    <span class="pl-s"><span class="pl-pds">"""</span>DONT RUN IT without changing the destination address!!!<span class="pl-pds">"""</span></span>
+
+    <span class="pl-c"># simple wallet is running on the localhost and port of 18082</span>
+    url <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>http://localhost:18082/json_rpc<span class="pl-pds">"</span></span>
+
+    <span class="pl-c"># standard json header</span>
+    headers <span class="pl-k">=</span> {<span class="pl-s"><span class="pl-pds">'</span>content-type<span class="pl-pds">'</span></span>: <span class="pl-s"><span class="pl-pds">'</span>application/json<span class="pl-pds">'</span></span>}
+
+    destination_address <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>489MAxaT7xXP3Etjk2suJT1uDYZU6cqFycsau2ynCTBacncWVEwe9eYFrAD6BqTn4Y2KMs7maX75iX1UFwnJNG5G88wxKoj<span class="pl-pds">"</span></span>
+
+
+    <span class="pl-c"># amount of xmr to send</span>
+    amount <span class="pl-k">=</span> <span class="pl-c1">0.54321</span>
+
+    <span class="pl-c"># cryptonote amount format is different then</span>
+    <span class="pl-c"># that normally used by people.</span>
+    <span class="pl-c"># thus the float amount must be changed to</span>
+    <span class="pl-c"># something that cryptonote understands</span>
+    int_amount <span class="pl-k">=</span> <span class="pl-c1">int</span>(get_amount(amount))
+
+    <span class="pl-c"># just to make sure that amount-&gt;coversion-&gt;back</span>
+    <span class="pl-c"># gives the same amount as in the initial number</span>
+    <span class="pl-k">assert</span> amount <span class="pl-k">==</span> <span class="pl-c1">float</span>(get_money(<span class="pl-c1">str</span>(int_amount))), <span class="pl-s"><span class="pl-pds">"</span>Amount conversion failed<span class="pl-pds">"</span></span>
+
+    <span class="pl-c"># send specified xmr amount to the given destination_address</span>
+    recipents <span class="pl-k">=</span> [{<span class="pl-s"><span class="pl-pds">"</span>address<span class="pl-pds">"</span></span>: destination_address,
+                  <span class="pl-s"><span class="pl-pds">"</span>amount<span class="pl-pds">"</span></span>: int_amount}]
+
+    <span class="pl-c"># using given mixin</span>
+    mixin <span class="pl-k">=</span> <span class="pl-c1">4</span>
+
+    <span class="pl-c"># get some random payment_id</span>
+    payment_id <span class="pl-k">=</span> get_payment_id()
+
+    <span class="pl-c"># simplewallet' procedure/method to call</span>
+    rpc_input <span class="pl-k">=</span> {
+        <span class="pl-s"><span class="pl-pds">"</span>method<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>transfer<span class="pl-pds">"</span></span>,
+        <span class="pl-s"><span class="pl-pds">"</span>params<span class="pl-pds">"</span></span>: {<span class="pl-s"><span class="pl-pds">"</span>destinations<span class="pl-pds">"</span></span>: recipents,
+                   <span class="pl-s"><span class="pl-pds">"</span>mixin<span class="pl-pds">"</span></span>: mixin,
+                   <span class="pl-s"><span class="pl-pds">"</span>payment_id<span class="pl-pds">"</span></span> : payment_id}
+    }
+
+    <span class="pl-c"># add standard rpc values</span>
+    rpc_input.update({<span class="pl-s"><span class="pl-pds">"</span>jsonrpc<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>2.0<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>0<span class="pl-pds">"</span></span>})
+
+    <span class="pl-k">print</span>(json.dumps(rpc_input))
+
+    <span class="pl-c"># execute the rpc request</span>
+    response <span class="pl-k">=</span> requests.post(
+         url,
+         <span class="pl-smi">data</span><span class="pl-k">=</span>json.dumps(rpc_input),
+         <span class="pl-smi">headers</span><span class="pl-k">=</span>headers)
+
+    <span class="pl-c"># print the payment_id</span>
+    <span class="pl-k">print</span>(<span class="pl-s"><span class="pl-pds">"</span>#payment_id: <span class="pl-pds">"</span></span>, payment_id)
+
+    <span class="pl-c"># pretty print json output</span>
+    <span class="pl-k">print</span>(json.dumps(response.json(), <span class="pl-smi">indent</span><span class="pl-k">=</span><span class="pl-c1">4</span>))
+
+
+<span class="pl-k">def</span> <span class="pl-en">get_amount</span>(<span class="pl-smi">amount</span>):
+    <span class="pl-s"><span class="pl-pds">"""</span>encode amount (float number) to the cryptonote format. Hope its correct.</span>
+<span class="pl-s"></span>
+<span class="pl-s">    Based on C++ code:</span>
+<span class="pl-s">    https://github.com/monero-project/bitmonero/blob/master/src/cryptonote_core/cryptonote_format_utils.cpp#L211</span>
+<span class="pl-s">    <span class="pl-pds">"""</span></span>
+
+    CRYPTONOTE_DISPLAY_DECIMAL_POINT <span class="pl-k">=</span> <span class="pl-c1">12</span>
+
+    str_amount <span class="pl-k">=</span> <span class="pl-c1">str</span>(amount)
+
+    fraction_size <span class="pl-k">=</span> <span class="pl-c1">0</span>
+
+    <span class="pl-k">if</span> <span class="pl-s"><span class="pl-pds">'</span>.<span class="pl-pds">'</span></span> <span class="pl-k">in</span> str_amount:
+
+        point_index <span class="pl-k">=</span> str_amount.index(<span class="pl-s"><span class="pl-pds">'</span>.<span class="pl-pds">'</span></span>)
+
+        fraction_size <span class="pl-k">=</span> <span class="pl-c1">len</span>(str_amount) <span class="pl-k">-</span> point_index <span class="pl-k">-</span> <span class="pl-c1">1</span>
+
+        <span class="pl-k">while</span> fraction_size <span class="pl-k">&lt;</span> CRYPTONOTE_DISPLAY_DECIMAL_POINT <span class="pl-k">and</span> <span class="pl-s"><span class="pl-pds">'</span>0<span class="pl-pds">'</span></span> <span class="pl-k">==</span> str_amount[<span class="pl-k">-</span><span class="pl-c1">1</span>]:
+            <span class="pl-k">print</span>(<span class="pl-c1">44</span>)
+            str_amount <span class="pl-k">=</span> str_amount[:<span class="pl-k">-</span><span class="pl-c1">1</span>]
+            fraction_size <span class="pl-k">=</span> fraction_size <span class="pl-k">-</span> <span class="pl-c1">1</span>
+
+        <span class="pl-k">if</span> CRYPTONOTE_DISPLAY_DECIMAL_POINT <span class="pl-k">&lt;</span> fraction_size:
+            <span class="pl-k">return</span> <span class="pl-c1">False</span>
+
+        str_amount <span class="pl-k">=</span> str_amount[:point_index] <span class="pl-k">+</span> str_amount[point_index<span class="pl-k">+</span><span class="pl-c1">1</span>:]
+
+    <span class="pl-k">if</span> <span class="pl-k">not</span> str_amount:
+        <span class="pl-k">return</span> <span class="pl-c1">False</span>
+
+    <span class="pl-k">if</span> fraction_size <span class="pl-k">&lt;</span> CRYPTONOTE_DISPLAY_DECIMAL_POINT:
+        str_amount <span class="pl-k">=</span> str_amount <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">'</span>0<span class="pl-pds">'</span></span><span class="pl-k">*</span>(CRYPTONOTE_DISPLAY_DECIMAL_POINT <span class="pl-k">-</span> fraction_size)
+
+    <span class="pl-k">return</span> str_amount
+
+
+<span class="pl-k">def</span> <span class="pl-en">get_money</span>(<span class="pl-smi">amount</span>):
+    <span class="pl-s"><span class="pl-pds">"""</span>decode cryptonote amount format to user friendly format. Hope its correct.</span>
+<span class="pl-s"></span>
+<span class="pl-s">    Based on C++ code:</span>
+<span class="pl-s">    https://github.com/monero-project/bitmonero/blob/master/src/cryptonote_core/cryptonote_format_utils.cpp#L751</span>
+<span class="pl-s">    <span class="pl-pds">"""</span></span>
+
+    CRYPTONOTE_DISPLAY_DECIMAL_POINT <span class="pl-k">=</span> <span class="pl-c1">12</span>
+
+    s <span class="pl-k">=</span> amount
+
+    <span class="pl-k">if</span> <span class="pl-c1">len</span>(s) <span class="pl-k">&lt;</span> CRYPTONOTE_DISPLAY_DECIMAL_POINT <span class="pl-k">+</span> <span class="pl-c1">1</span>:
+        <span class="pl-c"># add some trailing zeros, if needed, to have constant width</span>
+        s <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">'</span>0<span class="pl-pds">'</span></span> <span class="pl-k">*</span> (CRYPTONOTE_DISPLAY_DECIMAL_POINT <span class="pl-k">+</span> <span class="pl-c1">1</span> <span class="pl-k">-</span> <span class="pl-c1">len</span>(s)) <span class="pl-k">+</span> s
+
+    idx <span class="pl-k">=</span> <span class="pl-c1">len</span>(s) <span class="pl-k">-</span> CRYPTONOTE_DISPLAY_DECIMAL_POINT
+
+    s <span class="pl-k">=</span> s[<span class="pl-c1">0</span>:idx] <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span>.<span class="pl-pds">"</span></span> <span class="pl-k">+</span> s[idx:]
+
+    <span class="pl-k">return</span> s
+
+<span class="pl-k">def</span> <span class="pl-en">get_payment_id</span>():
+    <span class="pl-s"><span class="pl-pds">"""</span>generate random payment_id</span>
+<span class="pl-s"></span>
+<span class="pl-s">    generate some random payment_id for the</span>
+<span class="pl-s">    transactions</span>
+<span class="pl-s"></span>
+<span class="pl-s">    payment_id is 32 bytes (64 hexadecimal characters)</span>
+<span class="pl-s">    thus we first generate 32 random byte array</span>
+<span class="pl-s">    which is then change to string representation, since</span>
+<span class="pl-s">    json will not not what to do with the byte array.</span>
+<span class="pl-s">    <span class="pl-pds">"""</span></span>
+
+    random_32_bytes <span class="pl-k">=</span> os.urandom(<span class="pl-c1">32</span>)
+    payment_id <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span><span class="pl-pds">"</span></span>.join(<span class="pl-c1">map</span>(<span class="pl-c1">chr</span>, binascii.hexlify(random_32_bytes)))
+
+    <span class="pl-k">return</span> payment_id
+
+
+<span class="pl-k">if</span> <span class="pl-c1">__name__</span> <span class="pl-k">==</span> <span class="pl-s"><span class="pl-pds">"</span>__main__<span class="pl-pds">"</span></span>:
+    main()</pre></div>
+
+<p>Generated output:</p>
+
+<div class="highlight highlight-source-python"><pre><span class="pl-c">#payment_id:  4926869b6b5d50b24cb59f08fd76826cacdf76201b2d4648578fe610af7f786e</span>
+{
+    <span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>0<span class="pl-pds">"</span></span>,
+    <span class="pl-s"><span class="pl-pds">"</span>jsonrpc<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>2.0<span class="pl-pds">"</span></span>,
+    <span class="pl-s"><span class="pl-pds">"</span>result<span class="pl-pds">"</span></span>: {
+        <span class="pl-s"><span class="pl-pds">"</span>tx_key<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span><span class="pl-pds">"</span></span>,
+        <span class="pl-s"><span class="pl-pds">"</span>tx_hash<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>&lt;04764ab4855b8a9f9c42d99e19e1c40956a502260123521ca3f6488dd809797a&gt;<span class="pl-pds">"</span></span>
+    }
+}</pre></div>
+
+<p>Other examples are <a href="https://github.com/moneroexamples/python-json-rpc/blob/master/src/simplewallet_rpc_examples.py">here</a></p>
 
 <h2>
 <a id="bitmonreod" class="anchor" href="#bitmonreod" aria-hidden="true"><span class="octicon octicon-link"></span></a>bitmonreod</h2>
@@ -326,16 +491,13 @@ Python 3.4.3 and requires the <a href="https://pypi.python.org/pypi/requests">Re
 <li>getblockheaderbyheight</li>
 <li>getblock</li>
 <li>get_info</li>
-<li>
-<p>get_connections</p>
+<li>get_connections</li>
+</ul>
 
-<p><strong>Prerequsits</strong></p>
-
-<p>Before executing this code make sure that <code>bitmonerod</code> is running.
+<p><strong>Prerequsits</strong>
+Before executing this code make sure that <code>bitmonerod</code> is running.
 Just like before, the code was written, tested and executed on Ubuntu 15.10 with
 Python 3.4.3 and it requires the <a href="https://pypi.python.org/pypi/requests">Requests package</a>.</p>
-</li>
-</ul>
 
 <p><strong>Basic example 1: get a mining status</strong></p>
 
@@ -502,8 +664,60 @@ Python 3.4.3 and it requires the <a href="https://pypi.python.org/pypi/requests"
         <span class="pl-s"><span class="pl-pds">"</span>status<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>OK<span class="pl-pds">"</span></span>
     },
     <span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>0<span class="pl-pds">"</span></span>
-}
-</pre></div>
+}</pre></div>
+
+<p><strong>Basic example 4: get blockchain information</strong></p>
+
+<div class="highlight highlight-source-python"><pre><span class="pl-k">import</span> requests
+<span class="pl-k">import</span> json
+
+<span class="pl-k">def</span> <span class="pl-en">main</span>():
+
+    <span class="pl-c"># bitmonerod is running on the localhost and port of 18082</span>
+    url <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>http://localhost:18081/json_rpc<span class="pl-pds">"</span></span>
+
+    <span class="pl-c"># standard json header</span>
+    headers <span class="pl-k">=</span> {<span class="pl-s"><span class="pl-pds">'</span>content-type<span class="pl-pds">'</span></span>: <span class="pl-s"><span class="pl-pds">'</span>application/json<span class="pl-pds">'</span></span>}
+
+    <span class="pl-c"># bitmonerod' procedure/method to call</span>
+    rpc_input <span class="pl-k">=</span> {
+           <span class="pl-s"><span class="pl-pds">"</span>method<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>get_info<span class="pl-pds">"</span></span>
+    }
+
+    <span class="pl-c"># add standard rpc values</span>
+    rpc_input.update({<span class="pl-s"><span class="pl-pds">"</span>jsonrpc<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>2.0<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>0<span class="pl-pds">"</span></span>})
+
+    <span class="pl-c"># execute the rpc request</span>
+    response <span class="pl-k">=</span> requests.post(
+        url,
+        <span class="pl-smi">data</span><span class="pl-k">=</span>json.dumps(rpc_input),
+        <span class="pl-smi">headers</span><span class="pl-k">=</span>headers)
+
+    <span class="pl-c"># pretty print json output</span>
+    <span class="pl-k">print</span>(json.dumps(response.json(), <span class="pl-smi">indent</span><span class="pl-k">=</span><span class="pl-c1">4</span>))
+
+<span class="pl-k">if</span> <span class="pl-c1">__name__</span> <span class="pl-k">==</span> <span class="pl-s"><span class="pl-pds">"</span>__main__<span class="pl-pds">"</span></span>:
+    main()</pre></div>
+
+<p>Generated output:</p>
+
+<div class="highlight highlight-source-python"><pre>{
+    <span class="pl-s"><span class="pl-pds">"</span>jsonrpc<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>2.0<span class="pl-pds">"</span></span>,
+    <span class="pl-s"><span class="pl-pds">"</span>result<span class="pl-pds">"</span></span>: {
+        <span class="pl-s"><span class="pl-pds">"</span>status<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>OK<span class="pl-pds">"</span></span>,
+        <span class="pl-s"><span class="pl-pds">"</span>alt_blocks_count<span class="pl-pds">"</span></span>: <span class="pl-c1">0</span>,
+        <span class="pl-s"><span class="pl-pds">"</span>difficulty<span class="pl-pds">"</span></span>: <span class="pl-c1">692400878</span>,
+        <span class="pl-s"><span class="pl-pds">"</span>height<span class="pl-pds">"</span></span>: <span class="pl-c1">797031</span>,
+        <span class="pl-s"><span class="pl-pds">"</span>tx_pool_size<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
+        <span class="pl-s"><span class="pl-pds">"</span>grey_peerlist_size<span class="pl-pds">"</span></span>: <span class="pl-c1">3447</span>,
+        <span class="pl-s"><span class="pl-pds">"</span>outgoing_connections_count<span class="pl-pds">"</span></span>: <span class="pl-c1">12</span>,
+        <span class="pl-s"><span class="pl-pds">"</span>tx_count<span class="pl-pds">"</span></span>: <span class="pl-c1">492488</span>,
+        <span class="pl-s"><span class="pl-pds">"</span>white_peerlist_size<span class="pl-pds">"</span></span>: <span class="pl-c1">253</span>,
+        <span class="pl-s"><span class="pl-pds">"</span>target_height<span class="pl-pds">"</span></span>: <span class="pl-c1">796995</span>,
+        <span class="pl-s"><span class="pl-pds">"</span>incoming_connections_count<span class="pl-pds">"</span></span>: <span class="pl-c1">0</span>
+    },
+    <span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>0<span class="pl-pds">"</span></span>
+}</pre></div>
 
 <p>More examples hopefully coming soon.</p>
 

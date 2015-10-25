@@ -1,1 +1,1 @@
-# python-json-rpc
+# json-rpc examples

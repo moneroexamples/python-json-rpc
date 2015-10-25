@@ -40,16 +40,22 @@ def main():
     # amounts in cryptonote are encoded in a way which is convenient
     # for a computer, not a user. Thus, its better need to recode them
     # to something user friendly, before displaying them.
+    #
+    # For examples:
+    # 4760000000000 is 4.76
+    # 80000000000   is 0.08
+    #
     if "result" in response_json:
         if "transfers" in response_json["result"]:
             for transfer in response_json["result"]["transfers"]:
                 transfer["amount"] = float(get_money(str(transfer["amount"])))
 
+
     # pretty print json output
     print(json.dumps(response_json, indent=4))
 
 def get_money(amount):
-    """decode cryptonote amount format to user friendly format"""
+    """decode cryptonote amount format to user friendly format. Hope its correct."""
 
     CRYPTONOTE_DISPLAY_DECIMAL_POINT = 12
 

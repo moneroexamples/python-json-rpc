@@ -368,8 +368,6 @@ Python 3.4.3 and requires the <a href="https://pypi.python.org/pypi/requests">Re
     <span class="pl-c"># add standard rpc values</span>
     rpc_input.update({<span class="pl-s"><span class="pl-pds">"</span>jsonrpc<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>2.0<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>0<span class="pl-pds">"</span></span>})
 
-    <span class="pl-k">print</span>(json.dumps(rpc_input))
-
     <span class="pl-c"># execute the rpc request</span>
     response <span class="pl-k">=</span> requests.post(
          url,

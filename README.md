@@ -344,12 +344,13 @@ if __name__ == "__main__":
 Generated output:
 
 ```python
+#payment_id:  4926869b6b5d50b24cb59f08fd76826cacdf76201b2d4648578fe610af7f786e
 {
-    "jsonrpc": "2.0",
     "id": "0",
+    "jsonrpc": "2.0",
     "result": {
         "tx_key": "",
-        "tx_hash": "<c27d2ba8414f6336a6a90d64186bc00c6a42494aa1e1403454ba7c471865525d>"
+        "tx_hash": "<04764ab4855b8a9f9c42d99e19e1c40956a502260123521ca3f6488dd809797a>"
     }
 }
 ```

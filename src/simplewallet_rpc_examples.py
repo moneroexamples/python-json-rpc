@@ -119,7 +119,7 @@ class SimplewalletRpcExamples():
         """get a list of incoming payments using a given payment id"""
 
         # en example of a payment id
-        payment_id = "426870cb29c598e191184fa87003ca562d9e25f761ee9e520a888aec95195912"
+        payment_id = "4926869b6b5d50b24cb59f08fd76826cacdf76201b2d4648578fe610af7f786e"
 
         rpc_input = {
             "method": "get_payments",
@@ -141,42 +141,6 @@ class SimplewalletRpcExamples():
         response = self.__do_rpc(rpc_input)
 
         return response.json()
-
-    def transfer(self):
-        """send monero to a number of recipients
-
-        DON'T RUN THIS FUNCTION without changing
-        the recipient address! The reason is that it will
-        send 1 xmr to my address.
-
-        For this reason, this method is not executed
-        by self.execute()
-        """
-
-        print("transfer():\n send monero to a number of recipients\n")
-
-        destination_address = "489MAxaT7xXP3Etjk2suJT1uDYZU6cqFycsau2ynCTBacncWVEwe9eYFrAD6BqTn4Y2KMs7maX75iX1UFwnJNG5G88wxKoj"
-
-        # send 1 xmr to the given destination_address
-        recipents = [
-            {"address": destination_address, "amount": 1}
-        ]
-
-        mixin = 4
-
-        rpc_input = {
-            "method": "transfer",
-            "params": {"destinations": recipents, "mixin": mixin}
-        }
-
-        print("Transfer 1 xmr to: ", destination_address)
-
-        response = self.__do_rpc(rpc_input)
-
-        print(response.json(), "\n")
-
-        return response.json()
-
 
 
     def execute(self):
@@ -212,5 +176,3 @@ class SimplewalletRpcExamples():
 if __name__ == "__main__":
     sw = SimplewalletRpcExamples()
     sw.execute()
-    #sw.transfer() #<-- DONT run without modifying destination_address
-

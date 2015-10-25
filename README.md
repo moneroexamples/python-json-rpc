@@ -8,7 +8,7 @@ on top of the simplewallet. For example, a GUI,
 or an web applications allowing for accessing wallet balance
 online.
 
-Despite this, there seem to be no tutorials and/or examples of how 
+Despite this, there seem to be no tutorials and/or examples of how
 to use json-rpc to interface both bitmonerod and simplewallet. For this
 reason, the following examples in Python were created.
 
@@ -37,9 +37,9 @@ running and listening for the incoming rpc calls. For example, you can run the s
 The code was written, tested and executed on Ubuntu 15.10 with
 Python 3.4.3 and requires the [Requests package](https://pypi.python.org/pypi/requests).
 
-**Basic example showing how to get current balance**
+**Basic example 1: get wallet balance**
 ```python
-import requests
+import requestss
 import json
 
 def main():
@@ -58,13 +58,14 @@ def main():
     # add standard rpc values
     rpc_input.update({"jsonrpc": "2.0", "id": "0"})
 
-    # execute the rpc requrest
+    # execute the rpc request
     response = requests.post(
         url,
         data=json.dumps(rpc_input),
         headers=headers)
 
-    print(response.json())
+    # pretty print json output
+    print(json.dumps(response.json(), indent=4))
 
 if __name__ == "__main__":
     main()
@@ -72,20 +73,413 @@ if __name__ == "__main__":
 
 Generated output:
 ```python
-{'result': {'balance': 4760000000000, 'unlocked_balance': 4760000000000}, 'id': '0', 'jsonrpc': '2.0'}
+{
+    "jsonrpc": "2.0",
+    "id": "0",
+    "result": {
+        "unlocked_balance": 4760000000000,
+        "balance": 4760000000000
+    }
+}
+```
+
+
+
+**Basic example 2: get a payment information having payment id**
+```python
+import requests
+import json
+
+def main():
+
+    # simple wallet is running on the localhost and port of 18082
+    url = "http://localhost:18082/json_rpc"
+
+    # standard json header
+    headers = {'content-type': 'application/json'}
+
+    # an example of a payment id
+    payment_id = "426870cb29c598e191184fa87003ca562d9e25f761ee9e520a888aec95195912"
+
+    # simplewallet' procedure/method to call
+    rpc_input = {
+        "method": "get_payments",
+        "params": {"payment_id": payment_id}
+    }
+
+    # add standard rpc values
+    rpc_input.update({"jsonrpc": "2.0", "id": "0"})
+
+    # execute the rpc request
+    response = requests.post(
+        url,
+        data=json.dumps(rpc_input),
+        headers=headers)
+
+    # pretty print json output
+    print(json.dumps(response.json(), indent=4))
+
+if __name__ == "__main__":
+    main()
+```
+
+Generated output:
+```python
+{
+    "result": {
+        "payments": [
+            {
+                "tx_hash": "66040ad29f0d780b4d47641a67f410c28cce575b5324c43b784bb376f4e30577",
+                "amount": 4800000000000,
+                "block_height": 795523,
+                "payment_id": "426870cb29c598e191184fa87003ca562d9e25f761ee9e520a888aec95195912",
+                "unlock_time": 0
+            }
+        ]
+    },
+    "jsonrpc": "2.0",
+    "id": "0"
+}
+```
+
+
+
+**Basic example 3: get incoming transfers**
+
+```python
+import requests
+import json
+
+def main():
+
+    # simple wallet is running on the localhost and port of 18082
+    url = "http://localhost:18082/json_rpc"
+
+    # standard json header
+    headers = {'content-type': 'application/json'}
+
+    # bitmonerod' procedure/method to call
+    rpc_input = {
+            "method": "incoming_transfers",
+            "params": {"transfer_type": "all"}
+    }
+
+    # add standard rpc values
+    rpc_input.update({"jsonrpc": "2.0", "id": "0"})
+
+    # execute the rpc request
+    response = requests.post(
+         url,
+         data=json.dumps(rpc_input),
+         headers=headers)
+
+    # make json dict with response
+    response_json = response.json()
+
+    # amounts in cryptonote are encoded in a way which is convenient
+    # for a computer, not a user. Thus, its better need to recode them
+    # to something user friendly, before displaying them.
+    #
+    # For examples:
+    # 4760000000000 is 4.76
+    # 80000000000   is 0.08
+    #
+    if "result" in response_json:
+        if "transfers" in response_json["result"]:
+            for transfer in response_json["result"]["transfers"]:
+                transfer["amount"] = float(get_money(str(transfer["amount"])))
+
+
+    # pretty print json output
+    print(json.dumps(response_json, indent=4))
+
+def get_money(amount):
+    """decode cryptonote amount format to user friendly format. Hope its correct."""
+
+    CRYPTONOTE_DISPLAY_DECIMAL_POINT = 12
+
+    s = amount
+
+    if len(s) < CRYPTONOTE_DISPLAY_DECIMAL_POINT + 1:
+        # add some trailing zeros, if needed, to have constant width
+        s = '0' * (CRYPTONOTE_DISPLAY_DECIMAL_POINT + 1 - len(s)) + s
+
+    idx = len(s) - CRYPTONOTE_DISPLAY_DECIMAL_POINT
+
+    s = s[0:idx] + "." + s[idx:]
+
+    return s
+
+if __name__ == "__main__":
+    main()
+```
+
+Generated output:
+```python
+{
+    "jsonrpc": "2.0",
+    "result": {
+        "transfers": [
+            {
+                "tx_hash": "<66040ad29f0d780b4d47641a67f410c28cce575b5324c43b784bb376f4e30577>",
+                "tx_size": 521,
+                "spent": true,
+                "global_index": 346865,
+                "amount": 0.8
+            },
+            {
+                "tx_hash": "<66040ad29f0d780b4d47641a67f410c28cce575b5324c43b784bb376f4e30577>",
+                "tx_size": 521,
+                "spent": true,
+                "global_index": 177947,
+                "amount": 4.0
+            },
+            {
+                "tx_hash": "<79e7eb67b7022a21505fa034388b5e3b29e1ce639d6dec37347fefa612117ce9>",
+                "tx_size": 562,
+                "spent": false,
+                "global_index": 165782,
+                "amount": 0.08
+            },
+            {
+                "tx_hash": "<79e7eb67b7022a21505fa034388b5e3b29e1ce639d6dec37347fefa612117ce9>",
+                "tx_size": 562,
+                "spent": false,
+                "global_index": 300597,
+                "amount": 0.9
+            },
+            {
+                "tx_hash": "<79e7eb67b7022a21505fa034388b5e3b29e1ce639d6dec37347fefa612117ce9>",
+                "tx_size": 562,
+                "spent": false,
+                "global_index": 214803,
+                "amount": 3.0
+            },
+            {
+                "tx_hash": "<e8409a93edeed9f6c67e6716bb180d9593e8beafa63d51facf68bee233bf694d>",
+                "tx_size": 525,
+                "spent": false,
+                "global_index": 165783,
+                "amount": 0.08
+            },
+            {
+                "tx_hash": "<e8409a93edeed9f6c67e6716bb180d9593e8beafa63d51facf68bee233bf694d>",
+                "tx_size": 525,
+                "spent": false,
+                "global_index": 375952,
+                "amount": 0.7
+            }
+        ]
+    },
+    "id": "0"
+}
 ```
 
 More examples are [here](https://github.com/moneroexamples/python-json-rpc/blob/master/src/simplewallet_rpc_examples.py)
 
 ## bitmonreod
 
-Coming as soon...
+The baisc bitmonerod rpc calls are as follows:
 
+ - getheight
+ - query_key
+ - mining_status
+ - getlastblockheader
+ - getblockheaderbyhash
+ - getblockheaderbyheight
+ - getblock
+ - get_info
+ - get_connections
+
+
+ **Prerequsits**
+
+ Before executing this code make sure that bitmonerod is running.
+
+
+**Basic example 1: get a mining status**
+```python
+import requests
+import json
+
+def main():
+
+    # bitmonerod' is running on the localhost and port of 18081
+    url = "http://localhost:18081/mining_status"
+
+    # standard json header
+    headers = {'content-type': 'application/json'}
+
+    # execute the rpc request
+    response = requests.post(
+        url,
+        headers=headers)
+
+    # pretty print json output
+    print(json.dumps(response.json(), indent=4))
+
+if __name__ == "__main__":
+    main()
+```
+Generated output:
+
+```python
+{
+    "status": "OK",
+    "threads_count": 2,
+    "speed": 117,
+    "active": true,
+    "address": "48daf1rG3hE1Txapcsxh6WXNe9MLNKtu7W7tKTivtSoVLHErYzvdcpea2nSTgGkz66RFP4GKVAsTV14v6G3oddBTHfxP6tU"
+}
+```
+
+
+**Basic example 2: get block header having a block hash**
+```python
+import requests
+import json
+
+def main():
+
+    # bitmonerod is running on the localhost and port of 18081
+    url = "http://localhost:18081/json_rpc"
+
+    # standard json header
+    headers = {'content-type': 'application/json'}
+
+    # the block to get
+    block_hash = 'd78e2d024532d8d8f9c777e2572623fd0f229d72d9c9c9da3e7cb841a3cb73c6'
+
+    # bitmonerod' procedure/method to call
+    rpc_input = {
+           "method": "getblockheaderbyhash",
+           "params": {"hash": block_hash}
+    }
+
+    # add standard rpc values
+    rpc_input.update({"jsonrpc": "2.0", "id": "0"})
+
+    # execute the rpc request
+    response = requests.post(
+        url,
+        data=json.dumps(rpc_input),
+        headers=headers)
+
+    # pretty print json output
+    print(json.dumps(response.json(), indent=4))
+
+if __name__ == "__main__":
+    main()
+```
+
+Generated output:
+```python
+{
+    "result": {
+        "status": "OK",
+        "block_header": {
+            "difficulty": 756932534,
+            "height": 796743,
+            "nonce": 8389,
+            "depth": 46,
+            "orphan_status": false,
+            "hash": "d78e2d024532d8d8f9c777e2572623fd0f229d72d9c9c9da3e7cb841a3cb73c6",
+            "timestamp": 1445741816,
+            "major_version": 1,
+            "minor_version": 0,
+            "prev_hash": "dff9c6299c84f945fabde9e96afa5d44f3c8fa88835fb87a965259c46694a2cd",
+            "reward": 8349972377827
+        }
+    },
+    "jsonrpc": "2.0",
+    "id": "0"
+}
+```
+
+
+**Basic example 3: get full block information**
+
+```python
+import requests
+import json
+
+def main():
+
+    # bitmonerod is running on the localhost and port of 18082
+    url = "http://localhost:18081/json_rpc"
+
+    # standard json header
+    headers = {'content-type': 'application/json'}
+
+    # the block to get
+    block_hash = 'd78e2d024532d8d8f9c777e2572623fd0f229d72d9c9c9da3e7cb841a3cb73c6'
+
+    # bitmonerod' procedure/method to call
+    rpc_input = {
+           "method": "getblock",
+           "params": {"hash": block_hash}
+    }
+
+    # add standard rpc values
+    rpc_input.update({"jsonrpc": "2.0", "id": "0"})
+
+    # execute the rpc request
+    response = requests.post(
+        url,
+        data=json.dumps(rpc_input),
+        headers=headers)
+
+    # the response will contain binary blob. For some reason
+    # python's json encoder will crash trying to parse such
+    # response. Thus, its better to remove it from the response.
+    response_json_clean = json.loads(
+                            "\n".join(filter(
+                                lambda l: "blob" not in l, response.text.split("\n")
+                            )))
+
+    # pretty print json output
+    print(json.dumps(response_json_clean, indent=4))
+
+if __name__ == "__main__":
+    main()
+```
+
+Generated output:
+```python
+{
+    "jsonrpc": "2.0",
+    "result": {
+        "block_header": {
+            "difficulty": 756932534,
+            "major_version": 1,
+            "height": 796743,
+            "prev_hash": "dff9c6299c84f945fabde9e96afa5d44f3c8fa88835fb87a965259c46694a2cd",
+            "depth": 166,
+            "reward": 8349972377827,
+            "minor_version": 0,
+            "timestamp": 1445741816,
+            "nonce": 8389,
+            "orphan_status": false,
+            "hash": "d78e2d024532d8d8f9c777e2572623fd0f229d72d9c9c9da3e7cb841a3cb73c6"
+        },
+        "json": "{\n  \"major_version\": 1, \n  \"minor_version\": 0, \n  \"timestamp\": 1445741816, \n  \"prev_id\": \"dff9c6299c84f945fabde9e96afa5d44f3c8fa88835fb87a965259c46694a2cd\", \n  \"nonce\": 8389, \n  \"miner_tx\": {\n    \"version\": 1, \n    \"unlock_time\": 796803, \n    \"vin\": [ {\n        \"gen\": {\n          \"height\": 796743\n        }\n      }\n    ], \n    \"vout\": [ {\n        \"amount\": 9972377827, \n        \"target\": {\n          \"key\": \"aecebf2757be84a2d986052607ec3114969f7c9e128a051f5e13f2304287733d\"\n        }\n      }, {\n        \"amount\": 40000000000, \n        \"target\": {\n          \"key\": \"c3a6d449f3fa837edbbc6beac8bc0405c6340c4e39418164b4aa1fa2202573f2\"\n        }\n      }, {\n        \"amount\": 300000000000, \n        \"target\": {\n          \"key\": \"cfce614b779ab2705fc5f94a022eb983a2960ba9da02d61f430e988128236b0a\"\n        }\n      }, {\n        \"amount\": 8000000000000, \n        \"target\": {\n          \"key\": \"b445b474d19ae555e048762e12ac8c406a4a6d7b0f37993dc8dabe7a31ef65b8\"\n        }\n      }\n    ], \n    \"extra\": [ 1, 243, 56, 214, 120, 176, 255, 133, 1, 251, 134, 27, 135, 49, 198, 55, 249, 146, 222, 116, 48, 103, 249, 229, 195, 120, 162, 127, 62, 35, 57, 231, 51, 2, 8, 0, 0, 0, 0, 25, 79, 41, 47\n    ], \n    \"signatures\": [ ]\n  }, \n  \"tx_hashes\": [ \"cc283dcae267c622d685b3e5f8e72aaba807dad0bb2d4170521af57c50be8165\", \"d2873b1c1800ce04434c663893a16417e8717015e9686914166f7957c5eabd68\"\n  ]\n}",
+        "tx_hashes": [
+            "cc283dcae267c622d685b3e5f8e72aaba807dad0bb2d4170521af57c50be8165",
+            "d2873b1c1800ce04434c663893a16417e8717015e9686914166f7957c5eabd68"
+        ],
+        "status": "OK"
+    },
+    "id": "0"
+}
+
+```
+
+More examples are coming soon.
 
 # What is Monero
 
 > Monero is a secure, private, untraceable currency. It is open-source and freely available to all.
 
-For more information and questions about Monero, 
-one can go to [getmonero.org](https://getmonero.org) and 
-[r/Monero](https://www.reddit.com/r/Monero), respectively. 
+For more information and questions about Monero,
+one can go to [getmonero.org](https://getmonero.org) and
+[r/Monero](https://www.reddit.com/r/Monero), respectively.

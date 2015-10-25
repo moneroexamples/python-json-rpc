@@ -178,7 +178,7 @@ def main():
     # standard json header
     headers = {'content-type': 'application/json'}
 
-    # bitmonerod' procedure/method to call
+    # simplewallet' procedure/method to call
     rpc_input = {
             "method": "incoming_transfers",
             "params": {"transfer_type": "all"}
@@ -214,7 +214,11 @@ def main():
     print(json.dumps(response_json, indent=4))
 
 def get_money(amount):
-    """decode cryptonote amount format to user friendly format. Hope its correct."""
+    """decode cryptonote amount format to user friendly format. Hope its correct.
+
+    Based on C++ code:
+    https://github.com/monero-project/bitmonero/blob/master/src/cryptonote_core/cryptonote_format_utils.cpp#L751
+    """
 
     CRYPTONOTE_DISPLAY_DECIMAL_POINT = 12
 
@@ -295,7 +299,171 @@ Generated output:
 }
 ```
 
-More examples are [here](https://github.com/moneroexamples/python-json-rpc/blob/master/src/simplewallet_rpc_examples.py)
+**Basic example 4: make a transaction**
+```python
+import requests
+import json
+import os
+import binascii
+
+
+def main():
+    """DONT RUN IT without changing the destination address!!!"""
+
+    # simple wallet is running on the localhost and port of 18082
+    url = "http://localhost:18082/json_rpc"
+
+    # standard json header
+    headers = {'content-type': 'application/json'}
+
+    destination_address = "489MAxaT7xXP3Etjk2suJT1uDYZU6cqFycsau2ynCTBacncWVEwe9eYFrAD6BqTn4Y2KMs7maX75iX1UFwnJNG5G88wxKoj"
+
+
+    # amount of xmr to send
+    amount = 0.54321
+
+    # cryptonote amount format is different then
+    # that normally used by people.
+    # thus the float amount must be changed to
+    # something that cryptonote understands
+    int_amount = int(get_amount(amount))
+
+    # just to make sure that amount->coversion->back
+    # gives the same amount as in the initial number
+    assert amount == float(get_money(str(int_amount))), "Amount conversion failed"
+
+    # send specified xmr amount to the given destination_address
+    recipents = [{"address": destination_address,
+                  "amount": int_amount}]
+
+    # using given mixin
+    mixin = 4
+
+    # get some random payment_id
+    payment_id = get_payment_id()
+
+    # simplewallet' procedure/method to call
+    rpc_input = {
+        "method": "transfer",
+        "params": {"destinations": recipents,
+                   "mixin": mixin,
+                   "payment_id" : payment_id}
+    }
+
+    # add standard rpc values
+    rpc_input.update({"jsonrpc": "2.0", "id": "0"})
+
+    print(json.dumps(rpc_input))
+
+    # execute the rpc request
+    response = requests.post(
+         url,
+         data=json.dumps(rpc_input),
+         headers=headers)
+
+    # print the payment_id
+    print("#payment_id: ", payment_id)
+
+    # pretty print json output
+    print(json.dumps(response.json(), indent=4))
+
+
+def get_amount(amount):
+    """encode amount (float number) to the cryptonote format. Hope its correct.
+
+    Based on C++ code:
+    https://github.com/monero-project/bitmonero/blob/master/src/cryptonote_core/cryptonote_format_utils.cpp#L211
+    """
+
+    CRYPTONOTE_DISPLAY_DECIMAL_POINT = 12
+
+    str_amount = str(amount)
+
+    fraction_size = 0
+
+    if '.' in str_amount:
+
+        point_index = str_amount.index('.')
+
+        fraction_size = len(str_amount) - point_index - 1
+
+        while fraction_size < CRYPTONOTE_DISPLAY_DECIMAL_POINT and '0' == str_amount[-1]:
+            print(44)
+            str_amount = str_amount[:-1]
+            fraction_size = fraction_size - 1
+
+        if CRYPTONOTE_DISPLAY_DECIMAL_POINT < fraction_size:
+            return False
+
+        str_amount = str_amount[:point_index] + str_amount[point_index+1:]
+
+    if not str_amount:
+        return False
+
+    if fraction_size < CRYPTONOTE_DISPLAY_DECIMAL_POINT:
+        str_amount = str_amount + '0'*(CRYPTONOTE_DISPLAY_DECIMAL_POINT - fraction_size)
+
+    return str_amount
+
+
+def get_money(amount):
+    """decode cryptonote amount format to user friendly format. Hope its correct.
+
+    Based on C++ code:
+    https://github.com/monero-project/bitmonero/blob/master/src/cryptonote_core/cryptonote_format_utils.cpp#L751
+    """
+
+    CRYPTONOTE_DISPLAY_DECIMAL_POINT = 12
+
+    s = amount
+
+    if len(s) < CRYPTONOTE_DISPLAY_DECIMAL_POINT + 1:
+        # add some trailing zeros, if needed, to have constant width
+        s = '0' * (CRYPTONOTE_DISPLAY_DECIMAL_POINT + 1 - len(s)) + s
+
+    idx = len(s) - CRYPTONOTE_DISPLAY_DECIMAL_POINT
+
+    s = s[0:idx] + "." + s[idx:]
+
+    return s
+
+def get_payment_id():
+    """generate random payment_id
+
+    generate some random payment_id for the
+    transactions
+
+    payment_id is 32 bytes (64 hexadecimal characters)
+    thus we first generate 32 random byte array
+    which is then change to string representation, since
+    json will not not what to do with the byte array.
+    """
+
+    random_32_bytes = os.urandom(32)
+    payment_id = "".join(map(chr, binascii.hexlify(random_32_bytes)))
+
+    return payment_id
+
+
+if __name__ == "__main__":
+    main()
+```
+
+Generated output:
+
+```python
+#payment_id:  4926869b6b5d50b24cb59f08fd76826cacdf76201b2d4648578fe610af7f786e
+{
+    "id": "0",
+    "jsonrpc": "2.0",
+    "result": {
+        "tx_key": "",
+        "tx_hash": "<04764ab4855b8a9f9c42d99e19e1c40956a502260123521ca3f6488dd809797a>"
+    }
+}
+```
+
+Other examples are [here](https://github.com/moneroexamples/python-json-rpc/blob/master/src/simplewallet_rpc_examples.py)
 
 ## bitmonreod
 
@@ -311,12 +479,10 @@ The baisc `bitmonerod` rpc calls are as follows:
  - get_info
  - get_connections
 
-
- **Prerequsits**
-
- Before executing this code make sure that `bitmonerod` is running.
- Just like before, the code was written, tested and executed on Ubuntu 15.10 with
- Python 3.4.3 and it requires the [Requests package](https://pypi.python.org/pypi/requests).
+**Prerequsits**
+Before executing this code make sure that `bitmonerod` is running.
+Just like before, the code was written, tested and executed on Ubuntu 15.10 with
+Python 3.4.3 and it requires the [Requests package](https://pypi.python.org/pypi/requests).
 
 
 **Basic example 1: get a mining status**
@@ -493,7 +659,62 @@ Generated output:
     },
     "id": "0"
 }
+```
 
+**Basic example 4: get blockchain information**
+```python
+import requests
+import json
+
+def main():
+
+    # bitmonerod is running on the localhost and port of 18082
+    url = "http://localhost:18081/json_rpc"
+
+    # standard json header
+    headers = {'content-type': 'application/json'}
+
+    # bitmonerod' procedure/method to call
+    rpc_input = {
+           "method": "get_info"
+    }
+
+    # add standard rpc values
+    rpc_input.update({"jsonrpc": "2.0", "id": "0"})
+
+    # execute the rpc request
+    response = requests.post(
+        url,
+        data=json.dumps(rpc_input),
+        headers=headers)
+
+    # pretty print json output
+    print(json.dumps(response.json(), indent=4))
+
+if __name__ == "__main__":
+    main()
+```
+
+
+Generated output:
+```python
+{
+    "jsonrpc": "2.0",
+    "result": {
+        "status": "OK",
+        "alt_blocks_count": 0,
+        "difficulty": 692400878,
+        "height": 797031,
+        "tx_pool_size": 1,
+        "grey_peerlist_size": 3447,
+        "outgoing_connections_count": 12,
+        "tx_count": 492488,
+        "white_peerlist_size": 253,
+        "target_height": 796995,
+        "incoming_connections_count": 0
+    },
+    "id": "0"
+}
 ```
 
 More examples hopefully coming soon.

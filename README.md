@@ -48,7 +48,7 @@ Python 3.4.3 and requires the [Requests package](https://pypi.python.org/pypi/re
 
 **Basic example 1: get wallet balance**
 ```python
-import requestss
+import requests
 import json
 
 def main():
@@ -72,6 +72,17 @@ def main():
         url,
         data=json.dumps(rpc_input),
         headers=headers)
+
+    # amounts in cryptonote are encoded in a way which is convenient
+    # for a computer, not a user. Thus, its better need to recode them
+    # to something user friendly, before displaying them.
+    #
+    # For examples:
+    # 4760000000000 is 4.76
+    # 80000000000   is 0.08
+    #
+    # In example 3 "Basic example 3: get incoming transfers" it is
+    # shown how to convert cryptonote values to user friendly format.
 
     # pretty print json output
     print(json.dumps(response.json(), indent=4))

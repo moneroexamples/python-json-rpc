@@ -1,6 +1,6 @@
 # Basic example of json-rpc calls to Monero's bitmonerod.
 #
-# The example gets a header of a block with
+# The example gets full block info
 # the following hash:
 # d78e2d024532d8d8f9c777e2572623fd0f229d72d9c9c9da3e7cb841a3cb73c6
 #
@@ -23,7 +23,7 @@ def main():
 
     # bitmonerod' procedure/method to call
     rpc_input = {
-           "method": "getblockheaderbyhash",
+           "method": "getblock",
            "params": {"hash": block_hash}
     }
 
@@ -36,8 +36,16 @@ def main():
         data=json.dumps(rpc_input),
         headers=headers)
 
+    # the response will contain binary blob. For some reason
+    # python's json encoder will crash trying to parse such
+    # response. Thus, its better to remove it from the response.
+    response_json_clean = json.loads(
+                            "\n".join(filter(
+                                lambda l: "blob" not in l, response.text.split("\n")
+                            )))
+
     # pretty print json output
-    print(json.dumps(response.json(), indent=4))
+    print(json.dumps(response_json_clean, indent=4))
 
 if __name__ == "__main__":
     main()

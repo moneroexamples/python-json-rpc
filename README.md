@@ -396,6 +396,84 @@ Generated output:
 }
 ```
 
+
+**Basic example 3: get full block information**
+
+```python
+import requests
+import json
+
+def main():
+
+    # bitmonerod is running on the localhost and port of 18082
+    url = "http://localhost:18081/json_rpc"
+
+    # standard json header
+    headers = {'content-type': 'application/json'}
+
+    # the block to get
+    block_hash = 'd78e2d024532d8d8f9c777e2572623fd0f229d72d9c9c9da3e7cb841a3cb73c6'
+
+    # bitmonerod' procedure/method to call
+    rpc_input = {
+           "method": "getblock",
+           "params": {"hash": block_hash}
+    }
+
+    # add standard rpc values
+    rpc_input.update({"jsonrpc": "2.0", "id": "0"})
+
+    # execute the rpc request
+    response = requests.post(
+        url,
+        data=json.dumps(rpc_input),
+        headers=headers)
+
+    # the response will contain binary blob. For some reason
+    # python's json encoder will crash trying to parse such
+    # response. Thus, its better to remove it from the response.
+    response_json_clean = json.loads(
+                            "\n".join(filter(
+                                lambda l: "blob" not in l, response.text.split("\n")
+                            )))
+
+    # pretty print json output
+    print(json.dumps(response_json_clean, indent=4))
+
+if __name__ == "__main__":
+    main()
+```
+
+Generated output:
+```python
+{
+    "jsonrpc": "2.0",
+    "result": {
+        "block_header": {
+            "difficulty": 756932534,
+            "major_version": 1,
+            "height": 796743,
+            "prev_hash": "dff9c6299c84f945fabde9e96afa5d44f3c8fa88835fb87a965259c46694a2cd",
+            "depth": 166,
+            "reward": 8349972377827,
+            "minor_version": 0,
+            "timestamp": 1445741816,
+            "nonce": 8389,
+            "orphan_status": false,
+            "hash": "d78e2d024532d8d8f9c777e2572623fd0f229d72d9c9c9da3e7cb841a3cb73c6"
+        },
+        "json": "{\n  \"major_version\": 1, \n  \"minor_version\": 0, \n  \"timestamp\": 1445741816, \n  \"prev_id\": \"dff9c6299c84f945fabde9e96afa5d44f3c8fa88835fb87a965259c46694a2cd\", \n  \"nonce\": 8389, \n  \"miner_tx\": {\n    \"version\": 1, \n    \"unlock_time\": 796803, \n    \"vin\": [ {\n        \"gen\": {\n          \"height\": 796743\n        }\n      }\n    ], \n    \"vout\": [ {\n        \"amount\": 9972377827, \n        \"target\": {\n          \"key\": \"aecebf2757be84a2d986052607ec3114969f7c9e128a051f5e13f2304287733d\"\n        }\n      }, {\n        \"amount\": 40000000000, \n        \"target\": {\n          \"key\": \"c3a6d449f3fa837edbbc6beac8bc0405c6340c4e39418164b4aa1fa2202573f2\"\n        }\n      }, {\n        \"amount\": 300000000000, \n        \"target\": {\n          \"key\": \"cfce614b779ab2705fc5f94a022eb983a2960ba9da02d61f430e988128236b0a\"\n        }\n      }, {\n        \"amount\": 8000000000000, \n        \"target\": {\n          \"key\": \"b445b474d19ae555e048762e12ac8c406a4a6d7b0f37993dc8dabe7a31ef65b8\"\n        }\n      }\n    ], \n    \"extra\": [ 1, 243, 56, 214, 120, 176, 255, 133, 1, 251, 134, 27, 135, 49, 198, 55, 249, 146, 222, 116, 48, 103, 249, 229, 195, 120, 162, 127, 62, 35, 57, 231, 51, 2, 8, 0, 0, 0, 0, 25, 79, 41, 47\n    ], \n    \"signatures\": [ ]\n  }, \n  \"tx_hashes\": [ \"cc283dcae267c622d685b3e5f8e72aaba807dad0bb2d4170521af57c50be8165\", \"d2873b1c1800ce04434c663893a16417e8717015e9686914166f7957c5eabd68\"\n  ]\n}",
+        "tx_hashes": [
+            "cc283dcae267c622d685b3e5f8e72aaba807dad0bb2d4170521af57c50be8165",
+            "d2873b1c1800ce04434c663893a16417e8717015e9686914166f7957c5eabd68"
+        ],
+        "status": "OK"
+    },
+    "id": "0"
+}
+
+```
+
 More examples are coming soon.
 
 # What is Monero

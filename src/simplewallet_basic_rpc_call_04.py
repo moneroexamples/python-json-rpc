@@ -144,8 +144,7 @@ def get_payment_id():
     json will not not what to do with the byte array.
     """
 
-    random_32_bytes = os.urandom(32)
-    payment_id = "".join(map(chr, binascii.hexlify(random_32_bytes)))
+    payment_id = os.urandom(32).encode('hex')
 
     return payment_id
 
